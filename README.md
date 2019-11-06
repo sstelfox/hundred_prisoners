@@ -29,5 +29,28 @@ still getting a 0 success. It seems like starting with your own number and
 ensuring you're potentially part of your own cycle if it exists is one of the
 defining traits of the solution.
 
+## Results
+
+I ran this with 100,000,000 iterations to see the variations in results. The
+stats are real bad for any semblance of randomness and I would be surprised to
+*ever* see a success with these run based on those probabilities.
+
+This was before I added the fifth "random init" version of the optimal solution
+so it's results aren't available. This run took close to half an hour on my
+laptop. This could be vastly improved with threading but that was more effort
+than I was willing to put into this particular problem.
+
+```
+The prisoners optimally (naive) succeeded 31187840 out of 100000000 times
+The prisoners optimally (tracked) succeeded 31187840 out of 100000000 times
+The prisoners randomly (naive) succeeded 0 out of 100000000 times
+The prisoners randomly (tracked) succeeded 0 out of 100000000 times
+```
+
+I'm still kind of shocked that there were no cases where tracking the state of
+seen boxes improved the result. I suppose in any instance where the cycle
+length is less than the number of attempts you'd succeed and if it's longer
+then you'd fail before it ever mattered that you'd seen the box before.
+
 [1]: https://en.wikipedia.org/wiki/100_prisoners_problem
 [2]: http://rosettacode.org/wiki/100_prisoners
