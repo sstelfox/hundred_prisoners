@@ -1,10 +1,38 @@
 use rand::prelude::*;
 
+// The actual probabilty of the random attempt succeeding is 0.5^100 or 8.0^-31, I'd be surprised
+// to ever see a success on that one.
 const ATTEMPTS: usize = 100_000;
-const PRISONER_COUNT: usize = 100;
-const PRISONER_ATTEMPTS: usize = 50;
 
-fn attempt_random(drawers: &Vec<Option<usize>>) -> bool {
+const PRISONER_COUNT: usize = 10;
+const PRISONER_ATTEMPTS: usize = 5;
+
+fn attempt_optimal(drawers: &Vec<usize>) -> bool {
+    let mut rng = rand::thread_rng();
+
+    for prisoner_id in 0..PRISONER_COUNT {
+        let mut succeeded = false;
+        let mut box_to_check: usize = rng.gen_range(0, PRISONER_COUNT);
+
+        for _ in 0..PRISONER_ATTEMPTS {
+            if drawers[box_to_check] == prisoner_id {
+                succeeded = true;
+                break;
+            } else {
+                box_to_check = drawers[box_to_check];
+            }
+        }
+
+        // Any failure is a complete failure
+        if !succeeded {
+            return false;
+        }
+    }
+
+    true
+}
+
+fn attempt_random(drawers: &Vec<usize>) -> bool {
     let mut rng = rand::thread_rng();
 
     for prisoner_id in 0..PRISONER_COUNT {
@@ -13,8 +41,9 @@ fn attempt_random(drawers: &Vec<Option<usize>>) -> bool {
         for _ in 0..PRISONER_ATTEMPTS {
             let checked_box: usize = rng.gen_range(0, PRISONER_COUNT);
 
-            if drawers[checked_box] == Some(prisoner_id) {
+            if drawers[checked_box] == prisoner_id {
                 succeeded = true;
+                break;
             }
         }
 
@@ -29,11 +58,17 @@ fn attempt_random(drawers: &Vec<Option<usize>>) -> bool {
 
 fn main() {
     let mut rng = rand::thread_rng();
-    let mut drawers: Vec<Option<usize>> = (0..PRISONER_COUNT).map(|i| Some(i)).collect();
+    let mut drawers: Vec<usize> = (0..PRISONER_COUNT).collect();
+
+    let mut optimal_successes = 0;
     let mut random_successes = 0;
 
     for _ in 0..ATTEMPTS {
         drawers.shuffle(&mut rng);
+
+        if attempt_optimal(&drawers) {
+            optimal_successes += 1;
+        }
 
         if attempt_random(&drawers) {
             random_successes += 1;
@@ -41,4 +76,5 @@ fn main() {
     }
 
     println!("The prisoners randomly succeeded {} out of {} times", random_successes, ATTEMPTS);
+    println!("The prisoners optimally succeeded {} out of {} times", optimal_successes, ATTEMPTS);
 }
