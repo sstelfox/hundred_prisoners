@@ -8,11 +8,9 @@ const PRISONER_COUNT: usize = 100;
 const PRISONER_ATTEMPTS: usize = 50;
 
 fn attempt_optimal_naive(drawers: &Vec<usize>) -> bool {
-    let mut rng = rand::thread_rng();
-
     for prisoner_id in 0..PRISONER_COUNT {
         let mut succeeded = false;
-        let mut box_to_check: usize = rng.gen_range(0, PRISONER_COUNT);
+        let mut box_to_check = prisoner_id;
 
         for _ in 0..PRISONER_ATTEMPTS {
             if drawers[box_to_check] == prisoner_id {
@@ -36,7 +34,7 @@ fn attempt_optimal_tracked(drawers: &Vec<usize>) -> bool {
     let mut rng = rand::thread_rng();
 
     for prisoner_id in 0..PRISONER_COUNT {
-        let mut box_to_check: usize = rng.gen_range(0, PRISONER_COUNT);
+        let mut box_to_check = prisoner_id;
         let mut succeeded = false;
         let mut viewed_boxes: Vec<usize> = Vec::new();
 
@@ -67,7 +65,7 @@ fn attempt_optimal_tracked(drawers: &Vec<usize>) -> bool {
     true
 }
 
-fn attempt_random(drawers: &Vec<usize>) -> bool {
+fn attempt_naive_random(drawers: &Vec<usize>) -> bool {
     let mut rng = rand::thread_rng();
 
     for prisoner_id in 0..PRISONER_COUNT {
@@ -91,13 +89,15 @@ fn attempt_random(drawers: &Vec<usize>) -> bool {
     true
 }
 
+
+
 fn main() {
     let mut rng = rand::thread_rng();
     let mut drawers: Vec<usize> = (0..PRISONER_COUNT).collect();
 
     let mut optimal_naive_successes = 0;
     let mut optimal_tracked_successes = 0;
-    let mut random_successes = 0;
+    let mut random_naive_successes = 0;
 
     for _ in 0..ATTEMPTS {
         drawers.shuffle(&mut rng);
@@ -110,12 +110,12 @@ fn main() {
             optimal_tracked_successes += 1;
         }
 
-        if attempt_random(&drawers) {
-            random_successes += 1;
+        if attempt_naive_random(&drawers) {
+            random_naive_successes += 1;
         }
     }
 
     println!("The prisoners optimally (naive) succeeded {} out of {} times", optimal_naive_successes, ATTEMPTS);
     println!("The prisoners optimally (tracked) succeeded {} out of {} times", optimal_tracked_successes, ATTEMPTS);
-    println!("The prisoners randomly succeeded {} out of {} times", random_successes, ATTEMPTS);
+    println!("The prisoners randomly succeeded {} out of {} times", random_naive_successes, ATTEMPTS);
 }
