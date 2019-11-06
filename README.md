@@ -20,7 +20,7 @@ success.
 Specifically if prisoner 3 starts at box 3, it contains 1 and 1 in turn
 contains 3 that prisoner has succeeded. If they start randomly this changes
 significantly to where if I as prisoner 3 start at box 7 and it has 1 which
-points back to 7 then I'll will expend all my attempts bouncing between the two
+points back to 7 then I'll expend all my attempts bouncing between the two
 boxes.
 
 I went back and implemented a fifth option which does start randomly and tracks
