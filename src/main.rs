@@ -16,9 +16,9 @@ fn attempt_optimal_naive(drawers: &Vec<usize>) -> bool {
             if drawers[box_to_check] == prisoner_id {
                 succeeded = true;
                 break;
-            } else {
-                box_to_check = drawers[box_to_check];
             }
+
+            box_to_check = drawers[box_to_check];
         }
 
         // Any failure is a complete failure
@@ -49,9 +49,10 @@ fn attempt_optimal_tracked(drawers: &Vec<usize>) -> bool {
                 loop {
                     if viewed_boxes.iter().any(|i| i == &box_to_check) {
                         box_to_check = rng.gen_range(0, PRISONER_COUNT);
-                    } else {
-                        break;
+                        continue;
                     }
+
+                    break;
                 }
             }
         }
@@ -69,13 +70,50 @@ fn attempt_naive_random(drawers: &Vec<usize>) -> bool {
     let mut rng = rand::thread_rng();
 
     for prisoner_id in 0..PRISONER_COUNT {
+        let mut box_to_check: usize = rng.gen_range(0, PRISONER_COUNT);
         let mut succeeded = false;
 
         for _ in 0..PRISONER_ATTEMPTS {
-            let checked_box: usize = rng.gen_range(0, PRISONER_COUNT);
-
-            if drawers[checked_box] == prisoner_id {
+            if drawers[box_to_check] == prisoner_id {
                 succeeded = true;
+                break;
+            }
+
+            box_to_check = rng.gen_range(0, PRISONER_COUNT);
+        }
+
+        // Any failure is a complete failure
+        if !succeeded {
+            return false;
+        }
+    }
+
+    true
+}
+
+fn attempt_tracked_random(drawers: &Vec<usize>) -> bool {
+    let mut rng = rand::thread_rng();
+
+    for prisoner_id in 0..PRISONER_COUNT {
+        let mut box_to_check: usize = rng.gen_range(0, PRISONER_COUNT);
+        let mut succeeded = false;
+        let mut viewed_boxes: Vec<usize> = Vec::new();
+
+        for _ in 0..PRISONER_ATTEMPTS {
+            if drawers[box_to_check] == prisoner_id {
+                succeeded = true;
+                break;
+            }
+
+            viewed_boxes.push(box_to_check);
+            box_to_check = rng.gen_range(0, PRISONER_COUNT);
+
+            loop {
+                if viewed_boxes.iter().any(|i| i == &box_to_check) {
+                    box_to_check = rng.gen_range(0, PRISONER_COUNT);
+                    continue;
+                }
+
                 break;
             }
         }
@@ -89,8 +127,6 @@ fn attempt_naive_random(drawers: &Vec<usize>) -> bool {
     true
 }
 
-
-
 fn main() {
     let mut rng = rand::thread_rng();
     let mut drawers: Vec<usize> = (0..PRISONER_COUNT).collect();
@@ -98,6 +134,7 @@ fn main() {
     let mut optimal_naive_successes = 0;
     let mut optimal_tracked_successes = 0;
     let mut random_naive_successes = 0;
+    let mut random_tracked_successes = 0;
 
     for _ in 0..ATTEMPTS {
         drawers.shuffle(&mut rng);
@@ -113,9 +150,14 @@ fn main() {
         if attempt_naive_random(&drawers) {
             random_naive_successes += 1;
         }
+
+        if attempt_tracked_random(&drawers) {
+            random_tracked_successes += 1;
+        }
     }
 
     println!("The prisoners optimally (naive) succeeded {} out of {} times", optimal_naive_successes, ATTEMPTS);
     println!("The prisoners optimally (tracked) succeeded {} out of {} times", optimal_tracked_successes, ATTEMPTS);
-    println!("The prisoners randomly succeeded {} out of {} times", random_naive_successes, ATTEMPTS);
+    println!("The prisoners randomly (naive) succeeded {} out of {} times", random_naive_successes, ATTEMPTS);
+    println!("The prisoners randomly (tracked) succeeded {} out of {} times", random_tracked_successes, ATTEMPTS);
 }
