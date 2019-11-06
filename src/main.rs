@@ -30,6 +30,31 @@ fn attempt_optimal_naive(drawers: &Vec<usize>) -> bool {
     true
 }
 
+fn attempt_optimal_random_init(drawers: &Vec<usize>) -> bool {
+    let mut rng = rand::thread_rng();
+
+    for prisoner_id in 0..PRISONER_COUNT {
+        let mut succeeded = false;
+        let mut box_to_check = rng.gen_range(0, PRISONER_COUNT);
+
+        for _ in 0..PRISONER_ATTEMPTS {
+            if drawers[box_to_check] == prisoner_id {
+                succeeded = true;
+                break;
+            }
+
+            box_to_check = drawers[box_to_check];
+        }
+
+        // Any failure is a complete failure
+        if !succeeded {
+            return false;
+        }
+    }
+
+    true
+}
+
 fn attempt_optimal_tracked(drawers: &Vec<usize>) -> bool {
     let mut rng = rand::thread_rng();
 
@@ -132,6 +157,7 @@ fn main() {
     let mut drawers: Vec<usize> = (0..PRISONER_COUNT).collect();
 
     let mut optimal_naive_successes = 0;
+    let mut optimal_random_init_successes = 0;
     let mut optimal_tracked_successes = 0;
     let mut random_naive_successes = 0;
     let mut random_tracked_successes = 0;
@@ -141,6 +167,10 @@ fn main() {
 
         if attempt_optimal_naive(&drawers) {
             optimal_naive_successes += 1;
+        }
+
+        if attempt_optimal_random_init(&drawers) {
+            optimal_random_init_successes += 1;
         }
 
         if attempt_optimal_tracked(&drawers) {
@@ -157,6 +187,7 @@ fn main() {
     }
 
     println!("The prisoners optimally (naive) succeeded {} out of {} times", optimal_naive_successes, ATTEMPTS);
+    println!("The prisoners optimally (random_init) succeeded {} out of {} times", optimal_random_init_successes, ATTEMPTS);
     println!("The prisoners optimally (tracked) succeeded {} out of {} times", optimal_tracked_successes, ATTEMPTS);
     println!("The prisoners randomly (naive) succeeded {} out of {} times", random_naive_successes, ATTEMPTS);
     println!("The prisoners randomly (tracked) succeeded {} out of {} times", random_tracked_successes, ATTEMPTS);

@@ -23,10 +23,11 @@ significantly to where if I as prisoner 3 start at box 7 and it has 1 which
 points back to 7 then I'll will expend all my attempts bouncing between the two
 boxes.
 
-There is a good change I'll come back and implement a fifth solution to this
-which involves tracking the viewed boxes, but starting with a random box to
-avoid those useless cycles and see how it compares against the optimal
-solution.
+I went back and implemented a fifth option which does start randomly and tracks
+which boxes have been seen to see if I could maybe meet in the middle but I was
+still getting a 0 success. It seems like starting with your own number and
+ensuring you're potentially part of your own cycle if it exists is one of the
+defining traits of the solution.
 
 [1]: https://en.wikipedia.org/wiki/100_prisoners_problem
 [2]: http://rosettacode.org/wiki/100_prisoners
